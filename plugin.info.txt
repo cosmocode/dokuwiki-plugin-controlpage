@@ -1,0 +1,7 @@
+base   controlpage
+author Andreas Gohr
+email  gohr@cosmocode.de
+date   2022-09-20
+name   controlpage plugin
+desc   A helper plugin to parse a linked list
+url    https://www.dokuwiki.org/plugin:controlpage
