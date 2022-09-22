@@ -10,21 +10,21 @@ class Top extends Page
     }
 
     /**
+     * Always returns an empty array
      * @inheritdoc
-     * @throws \Exception cannot be called for top element
      */
     public function getSiblings()
     {
-        throw new \Exception('No siblings for top element');
+        return [];
     }
 
     /**
+     * Always returns an empty array
      * @inheritdoc
-     * @throws \Exception cannot be called for top element
      */
     public function getParents()
     {
-        throw new \Exception('No parents for top element');
+        return [];
     }
 
     /** @inheritdoc */
