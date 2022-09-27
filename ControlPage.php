@@ -6,8 +6,9 @@ use dokuwiki\File\PageResolver;
 
 class ControlPage
 {
-
+    /** @var Page[] */
     protected $pages = [];
+    /** @var Top */
     protected $top;
 
     /**
@@ -61,13 +62,47 @@ class ControlPage
     /**
      * Access the top element
      *
-     * Get it's children to iterate over the page hierarchy
+     * Use it's children to iterate over the page hierarchy
      *
      * @return Top
      */
     public function getTop()
     {
         return $this->top;
+    }
+
+    /**
+     * Get a flat list of all linked pages
+     *
+     * @return Page[]
+     */
+    public function getAll()
+    {
+        return $this->pages;
+    }
+
+    /**
+     * Get a flat list of all linked pages that do NOT have children
+     *
+     * @return Page[]
+     */
+    public function getLeaves()
+    {
+        return array_filter($this->pages, function ($page) {
+            return !$page->getChildren();
+        });
+    }
+
+    /**
+     * Get a flat list of all linked pages that DO have children
+     *
+     * @return Page[]
+     */
+    public function getBranches()
+    {
+        return array_filter($this->pages, function ($page) {
+            return !!$page->getChildren();
+        });
     }
 
     /**
