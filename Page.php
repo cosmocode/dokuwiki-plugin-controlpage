@@ -10,6 +10,8 @@ abstract class Page
     protected $parents = [];
     protected $children = [];
 
+    protected $properties;
+
     /**
      * @param string $id The pageID or the external URL
      * @param string $title The title as given in the link
@@ -89,6 +91,33 @@ abstract class Page
     public function addChild($child)
     {
         $this->children[] = $child;
+    }
+
+    /**
+     * Allows to attach an arbitrary property to the page
+     *
+     * @param string $name
+     * @param mixed $value
+     * @return void
+     */
+    public function setProperty($name, $value)
+    {
+        $this->properties[$name] = $value;
+    }
+
+    /**
+     * Get the named property, default is returned when the propery is not set
+     *
+     * @param string $name
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getProperty($name, $default = null)
+    {
+        if (isset($this->properties[$name])) {
+            return $this->properties[$name];
+        }
+        return $default;
     }
 
 }

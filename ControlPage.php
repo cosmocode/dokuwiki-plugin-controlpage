@@ -6,6 +6,11 @@ use dokuwiki\File\PageResolver;
 
 class ControlPage
 {
+    /** @var int do not include internal links */
+    const FLAG_NOINTERNAL = 1;
+    /** @var int do not include external links */
+    const FLAG_NOEXTERNAL = 2;
+
     /** @var Page[] */
     protected $pages = [];
     /** @var Top */
@@ -14,9 +19,12 @@ class ControlPage
     /**
      * Parse the control page
      *
+     * Check the flag constants on how to influence the behaviour
+     *
      * @param string $controlPage
+     * @param int $flags
      */
-    public function __construct($controlPage)
+    public function __construct($controlPage, $flags = 0)
     {
         $this->top = new Top();
         $instructions = p_cached_instructions(wikiFN($controlPage));
@@ -25,14 +33,15 @@ class ControlPage
         }
 
         $parents = [];
-        $lastpage = $this->top;
+        $lastpage = '';
 
         $resolver = new PageResolver($controlPage);
 
         foreach ($instructions as $instruction) {
             switch ($instruction[0]) {
                 case 'listu_open':
-                    array_unshift($parents, $lastpage); // last used page is added as parent
+                    if (!$parents) $parents = [$this->top]; // always start at the top element
+                    if ($lastpage) array_unshift($parents, $lastpage); // last used page is added as parent
                     break;
                 case 'listu_close':
                     array_shift($parents); // remove one parent level
@@ -40,16 +49,21 @@ class ControlPage
                 case 'internallink':
                 case 'externallink':
                     if ($instruction[0] == 'internallink') {
+                        if ($flags & self::FLAG_NOINTERNAL) break;
+
                         $newpage = new InternalPage(
                             $resolver->resolveId($instruction[1][0]),
                             $instruction[1][1]
                         );
                     } else {
+                        if ($flags & self::FLAG_NOEXTERNAL) break;
+
                         $newpage = new ExternalPage(
                             $instruction[1][0],
                             $instruction[1][1]
                         );
                     }
+                    if (!$parents) $parents = [$this->top]; // all dangling links go to the top
                     $newpage->setParents($parents);
                     $parents[0]->addChild($newpage);
                     $this->pages[$newpage->getId()] = $newpage;
