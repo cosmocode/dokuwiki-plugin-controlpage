@@ -4,7 +4,7 @@ namespace dokuwiki\plugin\controlpage;
 
 use dokuwiki\File\PageResolver;
 
-class ControlPage
+class ControlPage implements \JsonSerializable
 {
     /** @var int do not include internal links */
     const FLAG_NOINTERNAL = 1;
@@ -132,5 +132,16 @@ class ControlPage
     {
         if (isset($this->pages[$id])) return $this->pages[$id];
         return null;
+    }
+
+    /**
+     * @inheritdoc
+     *
+     * Gets all pages as a flat list, with the top pseudo element as empty string key. It's children property
+     * can be used to iterate over the page hierarchy. All other pages can be looked up by their ID.
+     */
+    public function jsonSerialize()
+    {
+        return array_merge(['' => $this->getTop()], $this->getAll());
     }
 }

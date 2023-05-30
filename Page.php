@@ -2,7 +2,7 @@
 
 namespace dokuwiki\plugin\controlpage;
 
-abstract class Page
+abstract class Page implements \JsonSerializable
 {
     protected $id = '';
     protected $title = '';
@@ -10,7 +10,7 @@ abstract class Page
     protected $parents = [];
     protected $children = [];
 
-    protected $properties;
+    protected $properties = [];
 
     /**
      * @param string $id The pageID or the external URL
@@ -120,4 +120,23 @@ abstract class Page
         return $default;
     }
 
+    /**
+     * @inheritdoc
+     *
+     * children and parents are flattened to their IDs
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'children' => array_map(function ($page) {
+                return $page->getId();
+            }, $this->children),
+            'parents' => array_map(function ($page) {
+                return $page->getId();
+            }, $this->parents),
+            'properties' => (object)$this->properties,
+        ];
+    }
 }
