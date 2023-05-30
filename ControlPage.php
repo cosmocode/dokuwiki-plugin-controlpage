@@ -23,8 +23,9 @@ class ControlPage implements \JsonSerializable
      *
      * @param string $controlPage
      * @param int $flags
+     * @param callable|null $propertyBuilder A callback to set additional properties on the pages
      */
-    public function __construct($controlPage, $flags = 0)
+    public function __construct($controlPage, $flags = 0, $propertyBuilder = null)
     {
         $this->top = new Top();
         $instructions = p_cached_instructions(wikiFN($controlPage));
@@ -67,6 +68,7 @@ class ControlPage implements \JsonSerializable
                     $newpage->setParents($parents);
                     $parents[0]->addChild($newpage);
                     $this->pages[$newpage->getId()] = $newpage;
+                    if (is_callable($propertyBuilder)) $propertyBuilder($newpage);
                     $lastpage = $newpage;
                     break;
             }
