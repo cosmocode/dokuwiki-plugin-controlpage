@@ -73,6 +73,9 @@ class ControlPage implements \JsonSerializable
                     break;
             }
         }
+
+        // sort pages so children can be processed before parents (or other way round)
+        uasort($this->pages, [$this, 'sortByDepth']);
     }
 
     /**
@@ -134,6 +137,23 @@ class ControlPage implements \JsonSerializable
     {
         if (isset($this->pages[$id])) return $this->pages[$id];
         return null;
+    }
+
+    /**
+     * Custom sorter to sort pages by their depth and then alphabetically
+     *
+     * @param Page $a
+     * @param Page $b
+     * @return int
+     */
+    protected function sortByDepth($a, $b)
+    {
+
+        $res = count($a->getParents()) - count($b->getParents());
+        if ($res === 0) {
+            $res = strcmp($a->getId(), $b->getId());
+        }
+        return $res;
     }
 
     /**
