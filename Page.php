@@ -39,6 +39,14 @@ abstract class Page implements \JsonSerializable
     }
 
     /**
+     * @param string $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    /**
      * Return a HTML link for this page
      *
      * @return string
